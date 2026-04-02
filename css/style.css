@@ -50,6 +50,9 @@ details>.typing-area{margin-top:.75rem}
 .word.current{ background:rgba(34,197,94,0.08);color:var(--accent);box-shadow:0 4px 12px rgba(34,197,94,0.06);transform:translateY(-1px) }
 .word.error{ color:var(--error);text-decoration:underline wavy var(--error) }
 
+.word.correct{ color:var(--accent); background:rgba(34,197,94,0.06); box-shadow:0 6px 18px rgba(34,197,94,0.04) }
+.input.input-error{ border-color:var(--error); box-shadow:0 6px 18px rgba(239,68,68,0.06) }
+
 .stats{ display:flex;gap:1.25rem;align-items:center;color:var(--text) }
 .stat{ font-weight:700;color:var(--text) }
 .stat .label{ font-weight:400;color:var(--dim);font-size:.85rem }
