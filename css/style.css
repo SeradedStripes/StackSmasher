@@ -34,6 +34,11 @@ p{ color:var(--text);opacity:.95 }
 .btn.primary{ background:linear-gradient(180deg,rgba(34,197,94,0.12),rgba(34,197,94,0.06)); border-color:rgba(34,197,94,0.18);color:var(--accent);box-shadow:0 6px 20px rgba(34,197,94,0.06) }
 .input{width:100%;padding:.6rem .75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text) }
 
+details summary{list-style:none;cursor:pointer;margin:0}
+details summary::-webkit-details-marker{display:none}
+summary.btn:focus{outline:2px solid rgba(34,197,94,0.18);outline-offset:2px;border-radius:6px}
+details>.typing-area{margin-top:.75rem}
+
 .text-dim{ color:var(--dim) }
 .text-error{ color:var(--error) }
 .accent{ color:var(--accent) }

@@ -18,6 +18,25 @@
 			<section class="card" aria-labelledby="main-heading">
 				<h1 id="main-heading">Start Typing to Test Your Skill...</h1>
 			</section>
+
+			<details class="card" id="begin-test">
+				<summary class="btn primary">Begin</summary>
+
+				<section class="typing-area" aria-labelledby="typing-heading">
+					<h2 id="typing-heading" class="small">Typing Test</h2>
+
+					<div class="word-list" aria-hidden="true">
+					</div>
+
+					<label for="typing-input" class="sr-only">Type the words shown</label>
+					<input id="typing-input" class="input" type="text" placeholder="Start typing here..." autocomplete="off" />
+
+					<div class="stats" aria-live="polite">
+						<div class="stat"><div class="label">WPM</div><div class="value">0</div></div>
+						<div class="stat"><div class="label">Accuracy</div><div class="value">100%</div></div>
+					</div>
+				</section>
+			</details>
 		</main>
 
 		<footer class="container footer" role="contentinfo">
