@@ -5,6 +5,7 @@
   const detailsEl = document.getElementById('begin-test');
   const wpmEl = document.getElementById('wpm-value');
   const accEl = document.getElementById('acc-value');
+  const cpmEl = document.getElementById('cpm-value');
   const timeEl = document.getElementById('time-value');
   const timeRadios = document.querySelectorAll('input[name="time-limit"]');
   const customInput = document.getElementById('custom-time');
@@ -17,9 +18,15 @@
   let currentInBatch = 0; // index within the visible batch
   let totalTyped = 0;
   let correctTyped = 0;
+  let correctChars = 0;
   let startedAt = null;
   let updateInterval = null;
   let timeLimitSeconds = null; // null = no limit
+
+  function markRecentSubmit(){
+    recentlySubmitted = true;
+    setTimeout(() => { recentlySubmitted = false; }, 250);
+  }
   let recentlySubmitted = false;
 
   function markRecentSubmit(){
@@ -94,8 +101,10 @@
     const elapsedSec = startedAt ? Math.floor((Date.now() - startedAt)/1000) : 0;
     const elapsedMin = elapsedSec / 60;
     const wpm = (startedAt && elapsedMin > 0) ? Math.round(correctTyped / elapsedMin) : 0;
+    const cpm = (startedAt && elapsedMin > 0) ? Math.round(correctChars / elapsedMin) : 0;
     const accuracy = totalTyped > 0 ? Math.round((correctTyped/totalTyped) * 100) : 100;
     if (wpmEl) wpmEl.textContent = String(wpm);
+    if (cpmEl) cpmEl.textContent = String(cpm);
     if (accEl) accEl.textContent = String(accuracy) + '%';
     if (timeEl) timeEl.textContent = formatTime(elapsedSec);
 
@@ -137,6 +146,14 @@
     totalTyped++;
     const correct = typed === currentWord;
     if (correct) correctTyped++;
+    // count correct characters for CPM
+    let matchedChars = 0;
+    const minLen = Math.min(typed.length, currentWord.length);
+    for (let i = 0; i < minLen; i++){
+      if (typed[i] === currentWord[i]) matchedChars++;
+    }
+    if (correct) matchedChars = currentWord.length;
+    correctChars += matchedChars;
     markWord(currentInBatch, correct);
     currentInBatch++;
     inputEl.value = '';
