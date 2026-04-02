@@ -5,8 +5,9 @@
   const detailsEl = document.getElementById('begin-test');
   const wpmEl = document.getElementById('wpm-value');
   const accEl = document.getElementById('acc-value');
-  const cpmEl = document.getElementById('cpm-value');
   const timeEl = document.getElementById('time-value');
+  const cpmEl = document.getElementById('cpm-value');
+  const bpmEl = document.getElementById('bpm-value');
   const timeRadios = document.querySelectorAll('input[name="time-limit"]');
   const customInput = document.getElementById('custom-time');
 
@@ -19,6 +20,8 @@
   let totalTyped = 0;
   let correctTyped = 0;
   let correctChars = 0;
+  let correctBytes = 0;
+  const encoder = new TextEncoder();
   let startedAt = null;
   let updateInterval = null;
   let timeLimitSeconds = null; // null = no limit
@@ -102,9 +105,11 @@
     const elapsedMin = elapsedSec / 60;
     const wpm = (startedAt && elapsedMin > 0) ? Math.round(correctTyped / elapsedMin) : 0;
     const cpm = (startedAt && elapsedMin > 0) ? Math.round(correctChars / elapsedMin) : 0;
+    const bpm = (startedAt && elapsedMin > 0) ? Math.round(correctBytes / elapsedMin) : 0;
     const accuracy = totalTyped > 0 ? Math.round((correctTyped/totalTyped) * 100) : 100;
     if (wpmEl) wpmEl.textContent = String(wpm);
     if (cpmEl) cpmEl.textContent = String(cpm);
+    if (bpmEl) bpmEl.textContent = String(bpm);
     if (accEl) accEl.textContent = String(accuracy) + '%';
     if (timeEl) timeEl.textContent = formatTime(elapsedSec);
 
@@ -153,7 +158,11 @@
       if (typed[i] === currentWord[i]) matchedChars++;
     }
     if (correct) matchedChars = currentWord.length;
-    correctChars += matchedChars;
+      correctChars += matchedChars;
+      // count bytes of the correctly matched portion
+      const matchedStr = currentWord.slice(0, matchedChars);
+      const matchedBytes = encoder.encode(matchedStr).length;
+      correctBytes += matchedBytes;
     markWord(currentInBatch, correct);
     currentInBatch++;
     inputEl.value = '';
