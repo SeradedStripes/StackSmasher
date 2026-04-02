@@ -20,6 +20,12 @@
   let startedAt = null;
   let updateInterval = null;
   let timeLimitSeconds = null; // null = no limit
+  let recentlySubmitted = false;
+
+  function markRecentSubmit(){
+    recentlySubmitted = true;
+    setTimeout(() => { recentlySubmitted = false; }, 250);
+  }
 
   function shuffleArray(arr){
     for (let i = arr.length - 1; i > 0; i--) {
@@ -164,7 +170,10 @@
         timeLimitSeconds = readTimeLimitFromUI();
         updateInterval = setInterval(updateStats, 1000);
       }
-      handleSubmitWord();
+      if (!recentlySubmitted) {
+        handleSubmitWord();
+        markRecentSubmit();
+      }
     }
   }
 
@@ -174,11 +183,18 @@
       timeLimitSeconds = readTimeLimitFromUI();
       updateInterval = setInterval(updateStats, 1000);
     }
-    const typed = inputEl.value;
+    const typedRaw = inputEl.value;
+    const typed = typedRaw.trim();
     const globalIndex = batchStart + currentInBatch;
     const currentWord = words[globalIndex] || '';
-    const isPrefix = currentWord.startsWith(typed);
-    inputEl.classList.toggle('input-error', typed.length > 0 && !isPrefix);
+    const isPrefix = currentWord.startsWith(typedRaw) || currentWord.startsWith(typed);
+    inputEl.classList.toggle('input-error', typedRaw.length > 0 && !isPrefix);
+
+    // Auto-submit when the typed content exactly matches the current word
+    if (!recentlySubmitted && typed.length > 0 && typed === currentWord){
+      handleSubmitWord();
+      markRecentSubmit();
+    }
   }
 
   function setupTimeControls(){
