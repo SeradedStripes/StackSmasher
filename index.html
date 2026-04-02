@@ -19,24 +19,38 @@
 				<h1 id="main-heading">Start Typing to Test Your Skill...</h1>
 			</section>
 
-			<details class="card" id="begin-test">
-				<summary class="btn primary">Begin</summary>
+			<div class="begin-controls">
+				<details class="card" id="begin-test">
+					<summary class="btn primary">Begin</summary>
 
-				<section class="typing-area" aria-labelledby="typing-heading">
-					<h2 id="typing-heading" class="small">Typing Test</h2>
+					<section class="typing-area" aria-labelledby="typing-heading">
+						<h2 id="typing-heading" class="small">Typing Test</h2>
 
-					<div class="word-list" aria-hidden="true">
+						<div class="word-list" aria-hidden="true">
+						</div>
+
+						<label for="typing-input" class="sr-only">Type the words shown</label>
+						<input id="typing-input" class="input" type="text" placeholder="Start typing here..." autocomplete="off" />
+
+						<div class="stats" aria-live="polite">
+							<div class="stat"><div class="label">WPM</div><div id="wpm-value" class="value">0</div></div>
+							<div class="stat"><div class="label">Accuracy</div><div id="acc-value" class="value">100%</div></div>
+							<div class="stat"><div class="label">Time</div><div id="time-value" class="value">0:00</div></div>
+						</div>
+					</section>
+				</details>
+
+				<div class="time-config card" aria-hidden="false">
+					<div class="small">Time limit</div>
+					<div class="time-options">
+						<label><input type="radio" name="time-limit" value="30"> 30s</label>
+						<label><input type="radio" name="time-limit" value="60" checked> 60s</label>
+						<label><input type="radio" name="time-limit" value="120"> 120s</label>
+						<label><input type="radio" name="time-limit" value="custom"> Custom</label>
+						<input id="custom-time" type="number" min="5" placeholder="secs" class="input small custom-time-input" disabled />
 					</div>
-
-					<label for="typing-input" class="sr-only">Type the words shown</label>
-					<input id="typing-input" class="input" type="text" placeholder="Start typing here..." autocomplete="off" />
-
-					<div class="stats" aria-live="polite">
-						<div class="stat"><div class="label">WPM</div><div class="value">0</div></div>
-						<div class="stat"><div class="label">Accuracy</div><div class="value">100%</div></div>
-					</div>
-				</section>
-			</details>
+				</div>
+			</div>
 		</main>
 		
 		<footer class="container footer" role="contentinfo">

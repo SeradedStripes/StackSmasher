@@ -1,9 +1,13 @@
 (function(){
-  const wordsPath = '/data/words.txt';
+  const wordsPath = 'data/words.txt';
   const wordListEl = document.querySelector('.word-list');
   const inputEl = document.getElementById('typing-input');
   const detailsEl = document.getElementById('begin-test');
-  const statEls = document.querySelectorAll('.stats .value');
+  const wpmEl = document.getElementById('wpm-value');
+  const accEl = document.getElementById('acc-value');
+  const timeEl = document.getElementById('time-value');
+  const timeRadios = document.querySelectorAll('input[name="time-limit"]');
+  const customInput = document.getElementById('custom-time');
 
   if (!wordListEl || !inputEl) return;
 
@@ -15,6 +19,7 @@
   let correctTyped = 0;
   let startedAt = null;
   let updateInterval = null;
+  let timeLimitSeconds = null; // null = no limit
 
   function shuffleArray(arr){
     for (let i = arr.length - 1; i > 0; i--) {
@@ -56,21 +61,44 @@
       return fallbackWordsFromDOM();
     }).then(list => {
       words = list;
-      // shuffle to randomize the order the user will see
       shuffleArray(words);
       batchStart = 0;
       renderWordList();
     });
   }
 
+  function formatTime(seconds){
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  function readTimeLimitFromUI(){
+    const sel = document.querySelector('input[name="time-limit"]:checked');
+    if (!sel) return null;
+    if (sel.value === 'custom'){
+      const v = parseInt(customInput.value,10);
+      return (Number.isFinite(v) && v >= 5) ? v : null;
+    }
+    const n = parseInt(sel.value,10);
+    return Number.isFinite(n) ? n : null;
+  }
+
   function updateStats(){
-    const wpmEl = statEls[0];
-    const accEl = statEls[1];
-    const elapsedMin = startedAt ? (Date.now() - startedAt)/60000 : 0;
+    const elapsedSec = startedAt ? Math.floor((Date.now() - startedAt)/1000) : 0;
+    const elapsedMin = elapsedSec / 60;
     const wpm = (startedAt && elapsedMin > 0) ? Math.round(correctTyped / elapsedMin) : 0;
     const accuracy = totalTyped > 0 ? Math.round((correctTyped/totalTyped) * 100) : 100;
     if (wpmEl) wpmEl.textContent = String(wpm);
     if (accEl) accEl.textContent = String(accuracy) + '%';
+    if (timeEl) timeEl.textContent = formatTime(elapsedSec);
+
+    // enforce time limit if set
+    if (timeLimitSeconds && startedAt){
+      if (elapsedSec >= timeLimitSeconds){
+        finishTest();
+      }
+    }
   }
 
   function setCurrent(indexInBatch){
@@ -133,6 +161,7 @@
       e.preventDefault();
       if (!startedAt){
         startedAt = Date.now();
+        timeLimitSeconds = readTimeLimitFromUI();
         updateInterval = setInterval(updateStats, 1000);
       }
       handleSubmitWord();
@@ -142,6 +171,7 @@
   function onInput(){
     if (!startedAt && inputEl.value.length > 0){
       startedAt = Date.now();
+      timeLimitSeconds = readTimeLimitFromUI();
       updateInterval = setInterval(updateStats, 1000);
     }
     const typed = inputEl.value;
@@ -149,6 +179,23 @@
     const currentWord = words[globalIndex] || '';
     const isPrefix = currentWord.startsWith(typed);
     inputEl.classList.toggle('input-error', typed.length > 0 && !isPrefix);
+  }
+
+  function setupTimeControls(){
+    if (!timeRadios || !customInput) return;
+    timeRadios.forEach(r => r.addEventListener('change', ()=>{
+      if (r.value === 'custom' && r.checked){
+        customInput.disabled = false;
+        customInput.focus();
+      } else if (r.checked){
+        customInput.disabled = true;
+      }
+      timeLimitSeconds = readTimeLimitFromUI();
+    }));
+    customInput.addEventListener('input', ()=>{
+      timeLimitSeconds = readTimeLimitFromUI();
+    });
+    timeLimitSeconds = readTimeLimitFromUI();
   }
 
   function addListeners(){
@@ -161,6 +208,7 @@
         }
       });
     }
+    setupTimeControls();
   }
 
   // Initialize
